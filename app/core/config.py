@@ -16,6 +16,14 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = 5434
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
+    # MinIO
+    MINIO_SERVER: str = "localhost"
+    MINIO_PORT: str = "9000"
+    MINIO_ROOT_USER: str = "minioadmin"
+    MINIO_ROOT_PASSWORD: str = "minioadmin"
+    MINIO_SECURE: bool = False
+    MINIO_BUCKET_NAME: str = "notes"
+
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: dict[str, any]) -> any:
         if isinstance(v, str):
@@ -40,6 +48,13 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
     AWS_REGION: Optional[str] = None
     S3_BUCKET: Optional[str] = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.SQLALCHEMY_DATABASE_URI = (
+            f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+            f"@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
 
     class Config:
         case_sensitive = True

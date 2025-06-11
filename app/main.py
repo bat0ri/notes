@@ -5,6 +5,7 @@ from app.core.config import get_settings
 from app.api.v1.router import api_router
 from app.db.base import Base
 from app.db.session import engine
+from app.storage.minio import storage
 
 settings = get_settings()
 
@@ -31,7 +32,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")
-def root():
+async def root():
     """
     Корневой эндпоинт для проверки работоспособности API.
     """
@@ -40,4 +41,10 @@ def root():
         "version": settings.VERSION,
         "docs_url": "/docs",
         "openapi_url": f"{settings.API_V1_STR}/openapi.json"
-    } 
+    }
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Инициализация при запуске приложения"""
+    await storage.initialize() 
