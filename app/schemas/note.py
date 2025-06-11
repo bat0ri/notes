@@ -8,7 +8,6 @@ from .tag import Tag
 class NoteBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     content: str = Field(..., min_length=1)
-    tags: List[str] = Field(default_factory=list)
 
 
 class NoteCreate(NoteBase):
@@ -20,6 +19,10 @@ class NoteUpdate(BaseModel):
     content: Optional[str] = Field(None, min_length=1)
     tags: Optional[List[str]] = None
 
+
+class NoteUpdateExternal(NoteUpdate):
+    tags: List[Tag]
+    
 
 class NoteInDBBase(NoteBase):
     id: str
