@@ -49,7 +49,7 @@ def create_note(
     """
     Создание новой заметки.
     """
-    return note_service.create_with_tags(db=db, obj_in=note_in)
+    return note_service.create(db=db, obj_in=note_in)
 
 
 @router.patch("/{note_id}", response_model=Note)
@@ -61,26 +61,9 @@ def patch_note(
     note_service: NoteService = Depends(deps.get_note_service)
 ) -> Note:
     """
-    Patch заметки.
-    - тег добавляется по айди (если существует)
+        Patch заметки
     """
     note = note_service.patch(db=db, note_id=note_id, obj_in=note_in)
-    if not note:
-        raise HTTPException(status_code=404, detail="Note not found")
-    return note
-
-@router.put("/{note_id}", response_model=Note)
-def update_note(
-    *,
-    db: Session = Depends(deps.get_db),
-    note_id: str,
-    note_in: NoteUpdateExternal,
-    note_service: NoteService = Depends(deps.get_note_service)
-) -> Note:
-    """
-    Обновление заметки -> + удаление тегов, если не указать
-    """
-    note = note_service.update(db=db, note_id=note_id, obj_in=note_in)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
     return note
